@@ -1,4 +1,3 @@
-// src/pages/Signup.tsx
 import { useState, useEffect } from "react";
 import {
   createUserWithEmailAndPassword,
@@ -13,9 +12,10 @@ import {
   User,
   Mail,
   Lock,
+  BookMarked,
+  Sun,
+  Moon,
   CheckCircle2,
-  XCircle,
-  Star,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
@@ -24,32 +24,26 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState("");
+  const [darkMode, setDarkMode] = useState(true);
   const navigate = useNavigate();
-
-  // password validation
-  const validations = {
-    length: password.length >= 8,
-    upper: /[A-Z]/.test(password),
-    lower: /[a-z]/.test(password),
-    number: /[0-9]/.test(password),
-    special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-  };
 
   useEffect(() => {
     setName("");
     setEmail("");
     setPassword("");
+    setConfirmPassword("");
   }, []);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    const allValid = Object.values(validations).every(Boolean);
-    if (!allValid) {
-      setError("Password must meet all strength requirements.");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match!");
       return;
     }
 
@@ -73,161 +67,206 @@ export default function Signup() {
     }
   };
 
+  const bgGradient = darkMode
+    ? "bg-gradient-to-br from-[#030712] via-[#0f172a] to-[#1e293b]"
+    : "bg-gradient-to-br from-white via-[#e2e8f0] to-[#cbd5e1]";
+  const cardBg = darkMode
+    ? "bg-[#0f172a]/80 border-[#1e293b]"
+    : "bg-white/80 border-gray-300";
+  const textColor = darkMode ? "text-white" : "text-gray-900";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#070015] via-[#0a0228] to-[#12003d] flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Animated background */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.15 }}
-        transition={{ duration: 2 }}
-        className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(100,70,255,0.4),transparent_70%)] blur-3xl"
-      />
+    <>
+    <div
+  className={`${bgGradient} flex items-center justify-center w-screen h-screen overflow-hidden transition-colors duration-700`}
+>
+  {/* Prevent Scrollbar */}
+  <style>
+    {`
+      html, body {
+        overflow: hidden;
+        height: 100%;
+      }
+    `}
+  </style>
 
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="relative bg-[#0d0222]/80 border border-[#31255f] rounded-2xl p-8 w-full max-w-md shadow-[0_0_60px_rgba(100,70,255,0.25)] backdrop-blur-xl"
+  {/* Theme Toggle */}
+  <button
+    onClick={() => setDarkMode(!darkMode)}
+    className="absolute top-6 right-6 bg-white/10 p-2 rounded-full hover:scale-110 transition"
+  >
+    {darkMode ? (
+      <Sun className="text-yellow-300 h-5 w-5" />
+    ) : (
+      <Moon className="text-gray-700 h-5 w-5" />
+    )}
+  </button>
+
+  {/* Card */}
+  <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}
+    className={`relative ${cardBg} border rounded-3xl px-8 py-10 w-[90%] sm:w-[400px] md:w-[440px] backdrop-blur-2xl shadow-lg flex flex-col items-center justify-center`}
+  >
+    {/* Header */}
+    <div className="flex flex-col items-center text-center mb-6">
+      <div
+        className={`w-14 h-14 rounded-2xl flex items-center justify-center border mb-3 ${darkMode
+          ? "bg-[#1e293b]/60 border-[#334155]"
+          : "bg-gray-100 border-gray-300"
+          }`}
       >
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 flex items-center justify-center border border-indigo-400/40 shadow-lg mx-auto">
-            <Star className="w-8 h-8 text-indigo-400" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mt-4 tracking-tight">
-            Join Skills Learning Journal
-          </h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Track your growth, improve daily, and visualize success.
-          </p>
-        </div>
-
-        {/* Error */}
-        {error && (
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-red-400 text-sm mb-3 bg-red-950/30 px-3 py-2 rounded-lg text-center border border-red-800"
-          >
-            {error}
-          </motion.p>
-        )}
-
-        {/* Form */}
-        <motion.form
-          onSubmit={handleSignup}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="space-y-5"
-        >
-          {/* Name */}
-          <div>
-            <label className="block text-sm text-gray-300 mb-1">Full Name</label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5" />
-              <input
-                type="text"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-[#090015] border border-gray-700 pl-10 pr-3 py-2.5 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm text-gray-300 mb-1">Email</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5" />
-              <input
-                type="email"
-                placeholder="you@skilljournal.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#090015] border border-gray-700 pl-10 pr-3 py-2.5 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-sm text-gray-300 mb-1">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-5 w-5" />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#090015] border border-gray-700 pl-10 pr-10 py-2.5 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-white"
-              >
-                {showPassword ? (
-                  <EyeOffIcon className="h-5 w-5" />
-                ) : (
-                  <EyeIcon className="h-5 w-5" />
-                )}
-              </button>
-            </div>
-
-            {/* Password Validation */}
-            <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              {Object.entries({
-                "At least 8 characters": validations.length,
-                "One uppercase letter": validations.upper,
-                "One lowercase letter": validations.lower,
-                "One number": validations.number,
-                "One special character": validations.special,
-              }).map(([rule, valid]) => (
-                <div key={rule} className="flex items-center space-x-2">
-                  {valid ? (
-                    <CheckCircle2 className="text-green-400 w-4 h-4" />
-                  ) : (
-                    <XCircle className="text-gray-500 w-4 h-4" />
-                  )}
-                  <span
-                    className={`${
-                      valid ? "text-green-400" : "text-gray-500"
-                    } text-xs`}
-                  >
-                    {rule}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Button */}
-          <motion.button
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            type="submit"
-            className="w-full bg-indigo-500 text-white py-2.5 rounded-lg font-semibold shadow-md hover:bg-indigo-600 transition"
-          >
-            Sign Up
-          </motion.button>
-        </motion.form>
-
-        {/* Footer */}
-        <p className="text-gray-500 text-sm text-center mt-6">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-indigo-400 hover:underline font-semibold"
-          >
-            Log in
-          </Link>
-        </p>
-      </motion.div>
+        <BookMarked
+          className={`w-7 h-7 ${darkMode ? "text-blue-400" : "text-blue-700"}`}
+        />
+      </div>
+      <h1
+        className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${darkMode ? "text-gray-100" : "text-gray-900"
+          }`}
+      >
+        Skills Learning Journal
+      </h1>
+      <p
+        className={`text-sm mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"} font-semibold`}
+      >
+        Create your Account
+      </p>
     </div>
+
+    {/* Error */}
+    {error && (
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-red-400 text-xs mb-3 bg-red-900/20 px-3 py-2 rounded-lg text-center border border-red-700 w-full"
+      >
+        {error}
+      </motion.p>
+    )}
+
+    {/* Form */}
+    <motion.form
+      onSubmit={handleSignup}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="flex flex-col gap-4 w-full"
+    >
+      {/* Full Name */}
+      <div className="relative">
+        <User className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className={`w-full pl-7 pr-2 py-2 bg-transparent border-b focus:outline-none focus:border-blue-400 transition ${darkMode
+              ? "border-gray-700 text-gray-100 placeholder-gray-500"
+              : "border-gray-400 text-gray-900 placeholder-gray-500"
+            }`}
+          required
+        />
+      </div>
+
+      {/* Email */}
+      <div className="relative">
+        <Mail className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
+        <input
+          type="email"
+          placeholder="Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={`w-full pl-7 pr-2 py-2 bg-transparent border-b focus:outline-none focus:border-blue-400 transition ${darkMode
+              ? "border-gray-700 text-gray-100 placeholder-gray-500"
+              : "border-gray-400 text-gray-900 placeholder-gray-500"
+            }`}
+          required
+        />
+      </div>
+
+      {/* Password */}
+      <div className="relative">
+        <Lock className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
+        <input
+          type={showPassword ? "text" : "password"}
+          placeholder="Create Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className={`w-full pl-7 pr-8 py-2 bg-transparent border-b focus:outline-none focus:border-blue-400 transition ${darkMode
+              ? "border-gray-700 text-gray-100 placeholder-gray-500"
+              : "border-gray-400 text-gray-900 placeholder-gray-500"
+            }`}
+          required
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+        >
+          {showPassword ? (
+            <EyeOffIcon className="h-4 w-4" />
+          ) : (
+            <EyeIcon className="h-4 w-4" />
+          )}
+        </button>
+      </div>
+
+      {/* Confirm Password */}
+      <div className="relative">
+        <Lock className="absolute left-0 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
+        <input
+          type={showConfirm ? "text" : "password"}
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className={`w-full pl-7 pr-8 py-2 bg-transparent border-b focus:outline-none focus:border-blue-400 transition ${darkMode
+              ? "border-gray-700 text-gray-100 placeholder-gray-500"
+              : "border-gray-400 text-gray-900 placeholder-gray-500"
+            }`}
+          required
+        />
+        <button
+          type="button"
+          onClick={() => setShowConfirm(!showConfirm)}
+          className="absolute right-0 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-200"
+        >
+          {showConfirm ? (
+            <EyeOffIcon className="h-4 w-4" />
+          ) : (
+            <EyeIcon className="h-4 w-4" />
+          )}
+        </button>
+      </div>
+
+      {/* Button */}
+      <motion.button
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.97 }}
+        type="submit"
+        className="w-full bg-blue-600 text-white py-2 rounded-full font-semibold shadow-md hover:bg-blue-700 transition flex items-center justify-center gap-2 mt-2"
+      >
+        <CheckCircle2 className="h-4 w-4" />
+        Sign Up
+      </motion.button>
+    </motion.form>
+
+    {/* Footer */}
+    <p
+      className={`text-xs text-center mt-4 ${darkMode ? "text-gray-400" : "text-gray-600"
+        }`}
+    >
+      Already have an account?{" "}
+      <Link
+        to="/login"
+        className="text-blue-400 hover:underline font-semibold"
+      >
+        Log in
+      </Link>
+    </p>
+  </motion.div>
+</div>
+
+    </>
   );
 }

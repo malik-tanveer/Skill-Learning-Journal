@@ -1,6 +1,11 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, GoogleAuthProvider, GithubAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  GithubAuthProvider,
+} from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; // 👈 Add this line
 
 // 🔹 Your Firebase config
 const firebaseConfig = {
@@ -17,9 +22,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
+const db = getFirestore(app); // 👈 Firestore initialized here
 
 // 🔹 Social Login Providers
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
 
-export { app, analytics, auth, googleProvider, githubProvider };
+export { app, analytics, auth, db, googleProvider, githubProvider };
