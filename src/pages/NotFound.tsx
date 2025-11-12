@@ -36,10 +36,10 @@ export default function NotFound() {
         <h1 className={`text-5xl font-bold mb-2 ${textColor}`}>404</h1>
         <p className={`text-lg mb-6 ${darkMode ? "text-gray-300" : "text-gray-700"}`}>Oops! Page not found.</p>
         <Link
-          to="/"
+          to="/dashboard"
           className="bg-blue-600 text-white py-2.5 px-6 rounded-full font-semibold hover:bg-blue-700 transition flex items-center gap-2"
         >
-          Go Home
+          Go Dashboard
         </Link>
       </motion.div>
     </div>

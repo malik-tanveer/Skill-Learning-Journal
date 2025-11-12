@@ -61,7 +61,7 @@ export default function Signup() {
       }
 
       toast.success("Signup successful! Welcome to Skills Learning Journal 🎉");
-      navigate("/");
+      navigate("/dashboard");
     } catch (err: any) {
       setError(err.message);
     }
@@ -73,7 +73,7 @@ export default function Signup() {
   const cardBg = darkMode
     ? "bg-[#0f172a]/80 border-[#1e293b]"
     : "bg-white/80 border-gray-300";
-  const textColor = darkMode ? "text-white" : "text-gray-900";
+  // const textColor = darkMode ? "text-white" : "text-gray-900";
 
   return (
     <>

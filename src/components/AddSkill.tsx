@@ -1,7 +1,7 @@
 // src/components/AddSkill.tsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Calendar } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +11,7 @@ const AddSkill: React.FC = () => {
   const [skillName, setSkillName] = useState('');
   const [description, setDescription] = useState('');
   const [targetLevel, setTargetLevel] = useState(5);
+  const [startDate, setStartDate] = useState('');
   const { user } = useAuth();
 
   const addSkill = async (e: React.FormEvent) => {
@@ -23,6 +24,7 @@ const AddSkill: React.FC = () => {
         description,
         targetLevel,
         currentLevel: 1,
+        startDate: startDate || new Date().toISOString().split('T')[0],
         userId: user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -31,6 +33,7 @@ const AddSkill: React.FC = () => {
       setSkillName('');
       setDescription('');
       setTargetLevel(5);
+      setStartDate('');
       setIsOpen(false);
     } catch (error) {
       console.error('Error adding skill:', error);
@@ -50,22 +53,25 @@ const AddSkill: React.FC = () => {
       </motion.button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gray-800 p-6 rounded-xl w-96"
+            className="bg-gray-800 p-6 rounded-xl w-full max-w-md"
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold">Add New Skill</h3>
-              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white">
+              <button 
+                onClick={() => setIsOpen(false)} 
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={addSkill} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Skill Name</label>
+                <label className="block text-sm font-medium mb-2">Skill Name *</label>
                 <input
                   type="text"
                   value={skillName}
@@ -87,18 +93,40 @@ const AddSkill: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  Target Level: {targetLevel}/10
-                </label>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  value={targetLevel}
-                  onChange={(e) => setTargetLevel(parseInt(e.target.value))}
-                  className="w-full"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Target Level: {targetLevel}/10
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={targetLevel}
+                    onChange={(e) => setTargetLevel(parseInt(e.target.value))}
+                    className="w-full"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">
+                    Start Date
+                  </label>
+                  <div className="relative">
+  <input
+    type="date"
+    value={startDate}
+    onChange={(e) => setStartDate(e.target.value)}
+    className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500 appearance-none relative z-20 cursor-pointer"
+    onFocus={(e) => e.target.showPicker && e.target.showPicker()} // ensures picker opens
+  />
+  <Calendar
+    className="absolute right-3 top-2.5 text-gray-400 pointer-events-none z-10"
+    size={16}
+  />
+</div>
+
+                </div>
               </div>
 
               <div className="flex space-x-3 pt-4">

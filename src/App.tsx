@@ -17,12 +17,10 @@ const App = () => {
           <Route path="*" element={<NotFound />} />
 
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoute>
-                <>
                   <Home />
-                </>
               </ProtectedRoute>
             }
           />
